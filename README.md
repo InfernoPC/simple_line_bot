@@ -1,24 +1,5 @@
-# README
+### It's a sad story about a man creating a line message bot on Christmas...
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+![so sad](/app/assets/images/aqua_is_idiot.jpg)
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+<img src="/app/assets/images/aqua_bot.png" width="200">
