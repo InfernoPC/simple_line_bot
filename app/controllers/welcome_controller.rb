@@ -17,6 +17,6 @@ class WelcomeController < ApplicationController
 
 		client.reply_message reply_token, response_message
 
-		head: ok
+		head :ok
 	end
 end
