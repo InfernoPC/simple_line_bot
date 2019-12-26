@@ -10,10 +10,22 @@ class WelcomeController < ApplicationController
 
 		reply_token = params['events'].first['replyToken']
 
-		response_message = {
-			type: 'text',
-			text: params['events'].first['message']['text']
-		}
+		response_message = case params['events'].first['message']['type']
+			when 'text'	
+				{ 
+					type: 'text',
+					text: params['events'].first['message']['text']
+				}
+			when 'sticker'
+				{
+					type: 'sticker',
+	        id: "11149181584287",
+	        stickerId: "1691913",
+	        packageId: "1040299",
+	        stickerResourceType: "STATIC"
+				}
+		end
+
 
 		client.reply_message reply_token, response_message
 
