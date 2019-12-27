@@ -11,52 +11,22 @@ class WelcomeController < ApplicationController
 		reply_token = params['events'].first['replyToken']
 
 		response_message = case params['events'].first['message']['text']
-		when 'pb'
-			puts 'get pb!'
+		when 'menu'
 			{
-				type: 'postback',
-				label: 'postback',
-				data: 'action=postback',
-				displayText: 'try postback'
-			}
-		when 'msg'
-			puts 'get msg!'
-			{
-				type: 'message',
-				label: 'reply',
-				text: 'message sent!'
-			}
-		when 'uri'
-			puts 'get uri!'
-			{
-				type: 'uri',
-				label: 'google.com',
-				uri: 'http://www.google.com/'
-			}
-		when 'dt'
-			puts 'get dt!'
-			{
-				type: 'datetimepicker',
-				label: 'select date',
-				date: 'storeId=12345', # ???
-				mode: 'datetime',
-			}
-		when 'cam'
-			puts 'get cam!'
-			{
-				type: 'camera',
-				label: 'Camera'
-			}
-		when 'loc'
-			puts 'get loc!'
-			{
-				type: 'location',
-				label: 'Location'
+				type: 'text',
+				text: 'Select one.',
+				quickReply: {
+					items: [
+						{	type: 'action', action: { type: 'message', label: 'sushi', text: 'sushi' }},
+						{	type: 'action', action: { type: 'message', label: 'tempura', text: 'tempura' }},
+						{	type: 'action', action: { type: 'location', label: 'send location' }}
+					]
+				}
 			}
 		when '?'
 			{
 				type: 'text',
-				text: 'pb, msg, uri, dt, cam, loc'
+				text: 'menu'
 			}
 		else
 			{	
