@@ -12,17 +12,47 @@ class WelcomeController < ApplicationController
 
 		response_message = case params['events'].first['message']['text']
 		when 'pb'
-			reply_pb
+			puts 'get pb!'
+			{
+				type: 'postback',
+				label: 'postback',
+				data: 'action=postback',
+				displayText: 'try postback'
+			}
 		when 'msg'
-			reply_msg
+			puts 'get msg!'
+			{
+				type: 'message',
+				label: 'reply',
+				text: 'message sent!'
+			}
 		when 'uri'
-			reply_uri
+			puts 'get uri!'
+			{
+				type: 'uri',
+				label: 'google.com',
+				uri: 'http://www.google.com/'
+			}
 		when 'dt'
-			reply_dt
+			puts 'get dt!'
+			{
+				type: 'datetimepicker',
+				label: 'select date',
+				date: 'storeId=12345', # ???
+				mode: 'datetime',
+			}
 		when 'cam'
-			reply_cam
+			puts 'get cam!'
+			{
+				type: 'camera',
+				label: 'Camera'
+			}
 		when 'loc'
-			reply_loc
+			puts 'get loc!'
+			{
+				type: 'location',
+				label: 'Location'
+			}
 		when '?'
 			{
 				type: 'text',
@@ -40,49 +70,4 @@ class WelcomeController < ApplicationController
 
 		head :ok
 	end
-
-	private
-	def reply_pb
-		{
-			type: 'postback',
-			label: 'postback',
-			data: 'action=postback',
-			displayText: 'try postback'
-		}
-	end
-	def reply_msg
-		{
-			type: 'message',
-			label: 'reply',
-			text: 'message sent!'
-		}
-	end
-	def reply_uri
-		{
-			type: 'uri',
-			label: 'google.com',
-			uri: 'http://www.google.com/'
-		}
-	end
-	def reply_dt
-		{
-			type: 'datetimepicker',
-			label: 'select date',
-			date: 'storeId=12345', # ???
-			mode: 'datetime',
-		}
-	end
-	def reply_cam
-		{
-			type: 'camera',
-			label: 'Camera'
-		}
-	end
-	def reply_loc
-		{
-			type: 'location',
-			label: 'Location'
-		}
-	end
-
 end
