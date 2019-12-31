@@ -14,7 +14,43 @@ class WelcomeController < ApplicationController
 
 		reply_token = params['events'].first['replyToken']
 
-		response_message = case params['events'].first['message']['text']
+		response_message = case params['events'].first['message']['type']
+											 when 'text'
+												 reply_text
+											 when 'image'
+												 ask_download_image
+											 when 'postback'
+												 download_image
+											 end
+
+		client.reply_message reply_token, response_message
+
+		head :ok
+	end
+
+	private
+	def ask_download_image
+		
+		{
+			type: 'template',
+			altText: 'ask download image',
+			template: {
+				type: 'confirm',
+				text: 'Download this image?',
+				actions: [
+					{type: 'postback', label: 'Yes', data: "message_id=#{params['events'].first['message']['id']}", text: 'yes'},
+					{type: 'message', label: 'No', text: 'no'}
+				]
+			}
+		}
+
+	end
+	def download_image
+
+	end
+	def reply_text
+		
+		case params['events'].first['message']['text']
 		when 'menu'
 			{
 				type: 'text',
@@ -75,10 +111,5 @@ class WelcomeController < ApplicationController
 				text: params['events'].first['message']['text']
 			}
 		end
-
-
-		client.reply_message reply_token, response_message
-
-		head :ok
 	end
 end
