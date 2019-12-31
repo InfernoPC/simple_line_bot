@@ -13,41 +13,59 @@ class WelcomeController < ApplicationController
 		}
 
 		reply_token = params['events'].first['replyToken']
+		
+		first_event = params['events'].first
 
-		response_message = case params['events'].first['message']['type']
-											 when 'text'
-												 reply_text
-											 when 'image'
-												 ask_download_image
-											 when 'postback'
-												 download_image
-											 end
+		if first_event['type'] == 'postback'
+			postback_params = first_event['postback']['data'].split('&').inject({}) do |h, s|
+				e = s.split('=')
+				h[e.first] = e.last
+				h
+			end
+			download_image postback_params['message_id']
+		elsif first_event['type'] == 'message'
+			response_message = case first_event['message']['type']
+												 when 'text'
+													 reply_text
+												 when 'image'
+													 ask_download_image
+												 end
+		end
 
-		client.reply_message reply_token, response_message
+		client.reply_message reply_token, response_message unless response_message.nil?
 
 		head :ok
 	end
 
 	private
 	def ask_download_image
-		
 		{
-			type: 'template',
-			altText: 'ask download image',
-			template: {
-				type: 'confirm',
-				text: 'Download this image?',
-				actions: [
-					{type: 'postback', label: 'Yes', data: "message_id=#{params['events'].first['message']['id']}", text: 'yes'},
-					{type: 'message', label: 'No', text: 'no'}
+			type: 'text',
+			text: 'Backup this image?',
+			quickReply: {
+				items: [
+					{	type: 'action', 
+						action: {type: 'postback', label: 'Yes', data: "message_id=#{params['events'].first['message']['id']}", text: 'yes'}
+					},
+					{ type: 'action',
+						action: {type: 'message', label: 'No', text: 'no'}
+					}
 				]
 			}
 		}
-
 	end
-	def download_image
-
+	def download_image message_id
+		puts "downloading file from #{download_image_url(message_id)} to #{download_filename}"
 	end
+
+	def download_image_url message_id
+		"https://api-data.line.me/v2/bot/message/#{message_id}/content"
+	end
+
+	def download_filename
+		"/tmp/#{Time.now.strftime '%Y-%m-%d_%H-%M-%S'}"
+	end
+
 	def reply_text
 		
 		case params['events'].first['message']['text']
