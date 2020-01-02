@@ -55,7 +55,9 @@ class WelcomeController < ApplicationController
 		}
 	end
 	def download_image message_id
-		puts "downloading file from #{download_image_url(message_id)} to #{download_filename}"
+		download_command = "curl -o #{download_filename} -X GET #{download_image_url(message_id)} -H 'Authorization: Bearer #{ENV['line_channel_token']}'"
+		puts download_command
+		exec download_command
 	end
 
 	def download_image_url message_id
@@ -63,7 +65,7 @@ class WelcomeController < ApplicationController
 	end
 
 	def download_filename
-		"/tmp/#{Time.now.strftime '%Y-%m-%d_%H-%M-%S'}"
+		"tmp/#{Time.now.strftime '%Y-%m-%d_%H-%M-%S'}"
 	end
 
 	def reply_text
