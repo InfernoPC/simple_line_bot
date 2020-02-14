@@ -5,26 +5,18 @@ class WelcomeController < ApplicationController
 	LOSE_MESSAGE = ['你贏了，呿。', '好阿都給你贏就好啦']
 
 	protect_from_forgery with: :null_session
+
 	def webhook
 
-		client = Line::Bot::Client.new {|config|
-			config.channel_secret = ENV['line_channel_secret']
-			config.channel_token = ENV['line_channel_token']
-		}
-
-		reply_token = params['events'].first['replyToken']
-		
-		first_event = params['events'].first
-
-		if first_event['type'] == 'postback'
-			postback_params = first_event['postback']['data'].split('&').inject({}) do |h, s|
+		if event['type'] == 'postback'
+			postback_params = event['postback']['data'].split('&').inject({}) do |h, s|
 				e = s.split('=')
 				h[e.first] = e.last
 				h
 			end
 			download_image postback_params['message_id']
-		elsif first_event['type'] == 'message'
-			response_message = case first_event['message']['type']
+		elsif event['type'] == 'message'
+			response_message = case event['message']['type']
 												 when 'text'
 													 reply_text
 												 when 'image'
@@ -38,6 +30,18 @@ class WelcomeController < ApplicationController
 	end
 
 	private
+	def client
+		@client ||= Line::Bot::Client.new do |config|
+			config.channel_secret = ENV['line_channel_secret']
+			config.channel_token = ENV['line_channel_token']
+		end
+	end
+	def event
+		@event ||= params['events'].first
+	end
+	def reply_token
+		@reply_token ||= event['replyToken']
+	end
 	def ask_download_image
 		{
 			type: 'text',
@@ -45,7 +49,7 @@ class WelcomeController < ApplicationController
 			quickReply: {
 				items: [
 					{	type: 'action', 
-						action: {type: 'postback', label: 'Yes', data: "message_id=#{params['events'].first['message']['id']}", text: 'yes'}
+						action: {type: 'postback', label: 'Yes', data: "message_id=#{event['message']['id']}", text: 'yes'}
 					},
 					{ type: 'action',
 						action: {type: 'message', label: 'No', text: 'no'}
@@ -70,7 +74,7 @@ class WelcomeController < ApplicationController
 
 	def reply_text
 		
-		case params['events'].first['message']['text']
+		case event['message']['text']
 		when 'menu'
 			{
 				type: 'text',
@@ -128,7 +132,7 @@ class WelcomeController < ApplicationController
 		else
 			{	
 				type: 'text',
-				text: params['events'].first['message']['text']
+				text: event['message']['text']
 			}
 		end
 	end
